@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import Web3 from 'web3';
+import web3 from '@/web3';
 import TokenCard from '../components/TokenCard.vue';
 
 const tokens = [
@@ -129,10 +129,6 @@ export default {
   },
   methods: {
     fetchNFT() {
-      const rpcUrl = 'http://124.251.110.210:9933';
-      // const rpcUrl = 'http://124.251.110.212:8080/#optimize=false&runs=200&evmVersion=null&version=soljson-v0.4.26+commit.4563c3fc.js';
-      const web3 = new Web3(rpcUrl);
-
       const address = '0xf24FF3a9CF04c71Dbc94D0b566f7A27B94566cac';
       web3.eth.getBalance(address, (err, wei) => {
         console.log(wei);
