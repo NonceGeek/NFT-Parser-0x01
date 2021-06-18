@@ -4,7 +4,6 @@ import App from './App.vue';
 import router from './router';
 import store from './store';
 import 'ant-design-vue/dist/antd.css';
-// eslint-disable-next-line no-unused-vars,import/order
 
 Vue.config.productionTip = false;
 
