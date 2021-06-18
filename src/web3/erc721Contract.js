@@ -551,14 +551,15 @@ export default erc721Contract;
 
 //测试合约里面的三个方法
 // 调用balanceOf(address)返回地址为address的用户的NFT数量
-erc721Contract.methods.balanceOf(address).call((err, result) => { console.log(result); }); // 结果：2
+// erc721Contract.methods.balanceOf(address).call((err, result) => { console.log(result); }); // 结果：2
 // 通过上述可知，地址为address的用户所有拥有的NFT数量是2；
 // 调用tokenOfOwnerIndex(address,index)，目的是根据索引值index返回地址为address的用户的tokenID
 // 索引是从0开始，tokenID是1开始
 // eg:当前用户所拥有的NFT数量为2，那么索引就是0 1 通过0或者1就可以找到对应NFT的tokenID
 // eslint-disable-next-line max-len,no-undef
-erc721Contract.methods.tokenOfOwnerByIndex(address, 0).call((err, result) => { console.log(result); })//结果：1
+// erc721Contract.methods.tokenOfOwnerByIndex(address, 0).call((err, result) => { console.log(result); })//结果：1
 // tokenID的作用是为了找到对应的NFT
 // 下行代码就是返回tokenID值为1所对应的NFT
 // eslint-disable-next-line no-undef
-erc721Contract.methods.tokenURI(1).call((err, result) => { console.log(result); }); // 结果：http://tva3.sinaimg.cn/large/83a551acgy1grfbk5hm6wj20fa0edgms.jpg
+// erc721Contract.methods.tokenURI(1).call((err, result) => { console.log(result); });
+// 结果：http://tva3.sinaimg.cn/large/83a551acgy1grfbk5hm6wj20fa0edgms.jpg

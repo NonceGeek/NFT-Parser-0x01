@@ -1,13 +1,13 @@
 <template>
   <div class="token-card">
     <a-card
-      :title="'NFT ID: ' + token.token_id"
+      :title="'NFT ID: ' + token.tokenId"
       style="width: 80%"
     >
       <img
         slot="cover"
         alt="uri"
-        :src="token.token_uri"
+        :src="token.tokenUri"
       />
       <p>card content</p>
       <p>card content</p>

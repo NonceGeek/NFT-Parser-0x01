@@ -5,17 +5,25 @@
         <a-row class="project-name">NFT Parser α</a-row>
       </a-layout-header>
       <a-layout-content>
+        <!-- 用户输入地址并显示 NFT -->
         <a-row type="flex" justify="space-between" align="middle">
           <a-col :span="16" :offset="4">
             <a-input-search
-              placeholder="请输入 NFT 地址"
+              :default-value="address"
               enter-button="获取 NFT!"
               size="large"
               @search="fetchNFT"
             />
           </a-col>
         </a-row>
-        <a-row class="token-list" type="flex" justify="space-between" align="middle">
+        <!-- 横向显示 NFT 列表 -->
+        <a-row
+          v-if="showSlides"
+          class="token-list"
+          type="flex"
+          justify="space-between"
+          align="middle"
+        >
           <a-col :span="16" :offset="4">
             <a-carousel arrows>
               <div
@@ -53,53 +61,14 @@
           </a-col>
         </a-row>
       </a-layout-content>
-      <a-layout-footer>Footer</a-layout-footer>
+      <a-layout-footer></a-layout-footer>
     </a-layout>
   </div>
 </template>
 
 <script>
-import web3 from '@/web3';
+import erc721Contract from '@/web3/erc721Contract';
 import TokenCard from '../components/TokenCard.vue';
-
-const tokens = [
-  {
-    token_id: 31,
-    token_uri: 'https://via.placeholder.com/300',
-  },
-  {
-    token_id: 22,
-    token_uri: 'https://via.placeholder.com/300',
-  },
-  {
-    token_id: 3645,
-    token_uri: 'https://via.placeholder.com/300',
-  },
-  {
-    token_id: 4087,
-    token_uri: 'https://via.placeholder.com/300',
-  },
-  {
-    token_id: 5112,
-    token_uri: 'https://via.placeholder.com/300',
-  },
-  {
-    token_id: 26,
-    token_uri: 'https://via.placeholder.com/300',
-  },
-  {
-    token_id: 77,
-    token_uri: 'https://via.placeholder.com/300',
-  },
-  {
-    token_id: 85,
-    token_uri: 'https://via.placeholder.com/300',
-  },
-  {
-    token_id: 29,
-    token_uri: 'https://via.placeholder.com/300',
-  },
-];
 
 export default {
   name: 'Home',
@@ -108,8 +77,10 @@ export default {
   },
   data() {
     return {
-      tokens,
+      address: '0xf24FF3a9CF04c71Dbc94D0b566f7A27B94566cac',
+      tokens: [],
       eachPageSlide: 4,
+      showSlides: false,
     };
   },
   computed: {
@@ -122,574 +93,61 @@ export default {
     pagedTokens() {
       const arr = [];
       for (let i = 0; i < this.pageCount; i++) {
-        arr.push(tokens.slice(i * this.eachPageSlide, (i + 1) * this.eachPageSlide));
+        arr.push(this.tokens.slice(i * this.eachPageSlide, (i + 1) * this.eachPageSlide));
       }
       return arr;
     },
   },
   methods: {
-    fetchNFT() {
-      const address = '0xf24FF3a9CF04c71Dbc94D0b566f7A27B94566cac';
-      web3.eth.getBalance(address, (err, wei) => {
-        console.log(wei);
-        // 余额单位从wei转换为ether
-        const balance = web3.utils.fromWei(wei, 'ether');
-        console.log('balance: ', balance);
-      });
+    async fetchNFT() {
+      console.clear()
 
-      const abi = [
-        {
-          inputs: [
-            {
-              internalType: 'string',
-              name: 'name_',
-              type: 'string',
-            },
-            {
-              internalType: 'string',
-              name: 'symbol_',
-              type: 'string',
-            },
-            {
-              internalType: 'address',
-              name: 'governance_',
-              type: 'address',
-            },
-          ],
-          stateMutability: 'nonpayable',
-          type: 'constructor',
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: 'address',
-              name: 'owner',
-              type: 'address',
-            },
-            {
-              indexed: true,
-              internalType: 'address',
-              name: 'approved',
-              type: 'address',
-            },
-            {
-              indexed: true,
-              internalType: 'uint256',
-              name: 'tokenId',
-              type: 'uint256',
-            },
-          ],
-          name: 'Approval',
-          type: 'event',
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: 'address',
-              name: 'owner',
-              type: 'address',
-            },
-            {
-              indexed: true,
-              internalType: 'address',
-              name: 'operator',
-              type: 'address',
-            },
-            {
-              indexed: false,
-              internalType: 'bool',
-              name: 'approved',
-              type: 'bool',
-            },
-          ],
-          name: 'ApprovalForAll',
-          type: 'event',
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: 'address',
-              name: 'previousOwner',
-              type: 'address',
-            },
-            {
-              indexed: true,
-              internalType: 'address',
-              name: 'newOwner',
-              type: 'address',
-            },
-          ],
-          name: 'OwnershipTransferred',
-          type: 'event',
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: 'address',
-              name: 'from',
-              type: 'address',
-            },
-            {
-              indexed: true,
-              internalType: 'address',
-              name: 'to',
-              type: 'address',
-            },
-            {
-              indexed: true,
-              internalType: 'uint256',
-              name: 'tokenId',
-              type: 'uint256',
-            },
-          ],
-          name: 'Transfer',
-          type: 'event',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'to',
-              type: 'address',
-            },
-            {
-              internalType: 'uint256',
-              name: 'tokenId',
-              type: 'uint256',
-            },
-          ],
-          name: 'approve',
-          outputs: [],
-          stateMutability: 'nonpayable',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'owner',
-              type: 'address',
-            },
-          ],
-          name: 'balanceOf',
-          outputs: [
-            {
-              internalType: 'uint256',
-              name: '',
-              type: 'uint256',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'uint256',
-              name: 'tokenId',
-              type: 'uint256',
-            },
-          ],
-          name: 'getApproved',
-          outputs: [
-            {
-              internalType: 'address',
-              name: '',
-              type: 'address',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-        {
-          inputs: [],
-          name: 'governance',
-          outputs: [
-            {
-              internalType: 'address',
-              name: '',
-              type: 'address',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'owner',
-              type: 'address',
-            },
-            {
-              internalType: 'address',
-              name: 'operator',
-              type: 'address',
-            },
-          ],
-          name: 'isApprovedForAll',
-          outputs: [
-            {
-              internalType: 'bool',
-              name: '',
-              type: 'bool',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'receiver',
-              type: 'address',
-            },
-            {
-              internalType: 'string',
-              name: 'tokenURI',
-              type: 'string',
-            },
-          ],
-          name: 'mintNft',
-          outputs: [
-            {
-              internalType: 'uint256',
-              name: '',
-              type: 'uint256',
-            },
-          ],
-          stateMutability: 'nonpayable',
-          type: 'function',
-        },
-        {
-          inputs: [],
-          name: 'name',
-          outputs: [
-            {
-              internalType: 'string',
-              name: '',
-              type: 'string',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: '',
-              type: 'address',
-            },
-            {
-              internalType: 'uint256',
-              name: '',
-              type: 'uint256',
-            },
-          ],
-          name: 'ownedTokens',
-          outputs: [
-            {
-              internalType: 'uint256',
-              name: '',
-              type: 'uint256',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-        {
-          inputs: [],
-          name: 'owner',
-          outputs: [
-            {
-              internalType: 'address',
-              name: '',
-              type: 'address',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'uint256',
-              name: 'tokenId',
-              type: 'uint256',
-            },
-          ],
-          name: 'ownerOf',
-          outputs: [
-            {
-              internalType: 'address',
-              name: '',
-              type: 'address',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-        {
-          inputs: [],
-          name: 'renounceOwnership',
-          outputs: [],
-          stateMutability: 'nonpayable',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'to',
-              type: 'address',
-            },
-            {
-              internalType: 'uint256',
-              name: 'tokenId',
-              type: 'uint256',
-            },
-          ],
-          name: 'safeMint',
-          outputs: [],
-          stateMutability: 'nonpayable',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'from',
-              type: 'address',
-            },
-            {
-              internalType: 'address',
-              name: 'to',
-              type: 'address',
-            },
-            {
-              internalType: 'uint256',
-              name: 'tokenId',
-              type: 'uint256',
-            },
-          ],
-          name: 'safeTransferFrom',
-          outputs: [],
-          stateMutability: 'nonpayable',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'from',
-              type: 'address',
-            },
-            {
-              internalType: 'address',
-              name: 'to',
-              type: 'address',
-            },
-            {
-              internalType: 'uint256',
-              name: 'tokenId',
-              type: 'uint256',
-            },
-            {
-              internalType: 'bytes',
-              name: '_data',
-              type: 'bytes',
-            },
-          ],
-          name: 'safeTransferFrom',
-          outputs: [],
-          stateMutability: 'nonpayable',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'operator',
-              type: 'address',
-            },
-            {
-              internalType: 'bool',
-              name: 'approved',
-              type: 'bool',
-            },
-          ],
-          name: 'setApprovalForAll',
-          outputs: [],
-          stateMutability: 'nonpayable',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'bytes4',
-              name: 'interfaceId',
-              type: 'bytes4',
-            },
-          ],
-          name: 'supportsInterface',
-          outputs: [
-            {
-              internalType: 'bool',
-              name: '',
-              type: 'bool',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-        {
-          inputs: [],
-          name: 'symbol',
-          outputs: [
-            {
-              internalType: 'string',
-              name: '',
-              type: 'string',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'uint256',
-              name: 'index',
-              type: 'uint256',
-            },
-          ],
-          name: 'tokenByIndex',
-          outputs: [
-            {
-              internalType: 'uint256',
-              name: '',
-              type: 'uint256',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'owner',
-              type: 'address',
-            },
-            {
-              internalType: 'uint256',
-              name: 'index',
-              type: 'uint256',
-            },
-          ],
-          name: 'tokenOfOwnerByIndex',
-          outputs: [
-            {
-              internalType: 'uint256',
-              name: '',
-              type: 'uint256',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'uint256',
-              name: 'tokenId',
-              type: 'uint256',
-            },
-          ],
-          name: 'tokenURI',
-          outputs: [
-            {
-              internalType: 'string',
-              name: '',
-              type: 'string',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-        {
-          inputs: [],
-          name: 'totalSupply',
-          outputs: [
-            {
-              internalType: 'uint256',
-              name: '',
-              type: 'uint256',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'from',
-              type: 'address',
-            },
-            {
-              internalType: 'address',
-              name: 'to',
-              type: 'address',
-            },
-            {
-              internalType: 'uint256',
-              name: 'tokenId',
-              type: 'uint256',
-            },
-          ],
-          name: 'transferFrom',
-          outputs: [],
-          stateMutability: 'nonpayable',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'newOwner',
-              type: 'address',
-            },
-          ],
-          name: 'transferOwnership',
-          outputs: [],
-          stateMutability: 'nonpayable',
-          type: 'function',
-        },
-      ];
-      const contract = new web3.eth.Contract(abi, address);
-      // contract.methods.totalSupply().call((err, result) => { console.log(result); });
-      // contract.methods.name().call((err, result) => { console.log(result); });
-      // contract.methods.symbol().call((err, result) => { console.log(result); });
-      // contract.methods.balanceOf(address).call((err, result) => { console.log(result); });
-      contract.getPastEvents(
-        'AllEvents',
-        {
-          fromBlock: 8717848,
-          toBlock: 'latest',
-        },
-      ).then((events) => {
-        console.log(events);
+      //测试合约里面的三个方法
+
+      // 调用balanceOf(address)返回地址为address的用户的NFT数量
+      // 结果：2，即地址为address的用户所有拥有的NFT数量是2
+      const tokenLength = await this.asyncBalanceOf(this.address)
+
+      // 调用tokenOfOwnerIndex(address, index)，目的是根据索引值index返回地址为address的用户的tokenID
+      // 索引是从0开始，tokenID是1开始
+      // eg:当前用户所拥有的NFT数量为2，那么索引就是0 1 通过0或者1就可以找到对应NFT的tokenID
+      for (let i = 0; i < tokenLength; i++) {
+        let tokenId = await this.asyncTokenOfOwnerByIndex(this.address, i)
+        this.tokens.push({
+          tokenId: parseInt(tokenId),
+        })
+      }
+
+      // tokenID的作用是为了找到对应的NFT
+      for (let i = 0; i < this.tokens.length; i++) {
+        let tokenUri = await this.asyncTokenURI(this.tokens[i].tokenId)
+        this.tokens[i].tokenUri = tokenUri
+      }
+      console.log(this.tokens)
+      this.showSlides = true
+    },
+    asyncBalanceOf(address) {
+      return new Promise((resolve, reject) => {
+        erc721Contract.methods.balanceOf(address).call((err, result) => {
+          if (err) reject(err);
+          resolve(result);
+        });
+      });
+    },
+    asyncTokenOfOwnerByIndex(address, tokenIndex) {
+      return new Promise((resolve, reject) => {
+        erc721Contract.methods.tokenOfOwnerByIndex(address, tokenIndex).call((err, result) => {
+          if (err) reject(err);
+          resolve(result);
+        });
+      });
+    },
+    asyncTokenURI(tokenId) {
+      return new Promise((resolve, reject) => {
+        erc721Contract.methods.tokenURI(tokenId).call((err, result) => {
+          if (err) reject(err);
+          resolve(result);
+        });
       });
     },
   },
