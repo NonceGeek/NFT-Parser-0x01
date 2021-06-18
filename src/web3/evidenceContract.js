@@ -1,6 +1,6 @@
-import web3 from "./index";
+import web3 from "./index"
 
-const evidenceAddress = "0xD11cD97e6f2bCdb30A8386D06A095cB4420e94A0";
+const evidenceFactoryAddress = '0x3ed62137c5DB927cb137c26455969116BF0c23Cb'
 const evidenceAbi = [
   {
     constant: true,
@@ -115,13 +115,15 @@ const evidenceAbi = [
     name: "newEvidenceEventWithKey",
     type: "event"
   }
-];
-const chainId = 1281;
+]
 
-const evidenceContract = new web3.eth.Contract(evidenceAbi, evidenceAddress);
+const evidenceContract = new web3.eth.Contract(evidenceAbi, evidenceFactoryAddress)
+
+const chainId = 1281
+const contractAddress = '0x493275370aF3f63d9ccd10a6539435121cF4fbb9'
 
 export {
   evidenceContract,
-  evidenceAddress,
+  contractAddress,
   chainId,
-};
+}

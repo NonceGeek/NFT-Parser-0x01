@@ -70,7 +70,7 @@
 import erc721Contract from '@/web3/erc721Contract';
 import {
   evidenceContract,
-  evidenceAddress,
+  contractAddress,
   chainId,
 
 } from '@/web3/evidenceContract';
@@ -133,7 +133,7 @@ export default {
       this.showSlides = true
       console.log(this.tokens)
 
-      const evidenceKey = `${chainId}:${evidenceAddress}:${this.tokens[0].tokenId}`
+      const evidenceKey = `${chainId}:${contractAddress}:${this.tokens[0].tokenId}`
       const result = await this.asyncGetEvidenceByKey(evidenceKey)
       console.log(result)
     },
