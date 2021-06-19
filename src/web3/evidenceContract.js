@@ -1,6 +1,6 @@
 import web3 from "./index"
 
-const evidenceFactoryAddress = '0x3ed62137c5DB927cb137c26455969116BF0c23Cb'
+const evidenceFactoryAddress = '0x493275370aF3f63d9ccd10a6539435121cF4fbb9'
 const evidenceAbi = [
   {
     constant: true,

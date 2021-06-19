@@ -48,7 +48,7 @@
                   <a-col
                     v-for="(tokens, index) in pagedTokens[pageIndex - 1]"
                     :key="((pageIndex - 1) * eachPageSlide) + index"
-                    :span="6"
+                    :span="12"
                     class="token-card"
                   >
                     <token-card
@@ -85,7 +85,7 @@ export default {
     return {
       nftAddress: '0xf24FF3a9CF04c71Dbc94D0b566f7A27B94566cac',
       tokens: [],
-      eachPageSlide: 4,
+      eachPageSlide: 2,
       showSlides: false,
     };
   },
@@ -126,16 +126,15 @@ export default {
 
       // tokenID的作用是为了找到对应的NFT
       for (let i = 0; i < this.tokens.length; i++) {
-        let tokenUri = await this.asyncTokenURI(this.tokens[i].tokenId)
+        const tokenUri = await this.asyncTokenURI(this.tokens[i].tokenId)
         this.tokens[i].tokenUri = tokenUri
+
+        const evidenceKey = `${chainId}:${contractAddress}:${this.tokens[i].tokenId}`
+        const result = await this.asyncGetEvidenceByKey(evidenceKey)
+        this.tokens[i].evidence = result
       }
 
       this.showSlides = true
-      console.log(this.tokens)
-
-      const evidenceKey = `${chainId}:${contractAddress}:${this.tokens[0].tokenId}`
-      const result = await this.asyncGetEvidenceByKey(evidenceKey)
-      console.log(result)
     },
     asyncBalanceOf(nftAddress) {
       return new Promise((resolve, reject) => {
