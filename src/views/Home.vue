@@ -2,7 +2,8 @@
   <div class="home">
     <a-layout>
       <a-layout-header>
-        <a-row class="project-name">NFT Parser α</a-row>
+        <a-row class="project-name">NFT-Parser-0x01</a-row>
+        <a-row class="project-description">基本款</a-row>
       </a-layout-header>
       <a-layout-content>
         <!-- 用户输入地址并显示 NFT -->
@@ -70,9 +71,8 @@
 import erc721Contract from '@/web3/erc721Contract';
 import {
   evidenceContract,
-  contractAddress,
+  erc721ContractAddress,
   chainId,
-
 } from '@/web3/evidenceContract';
 import TokenCard from '../components/TokenCard.vue';
 
@@ -129,7 +129,9 @@ export default {
         const tokenUri = await this.asyncTokenURI(this.tokens[i].tokenId)
         this.tokens[i].tokenUri = tokenUri
 
-        const evidenceKey = `${chainId}:${contractAddress}:${this.tokens[i].tokenId}`
+        const evidenceKey = `${chainId}:${erc721ContractAddress}:${this.tokens[i].tokenId}`
+        this.tokens[i].evidenceKey = evidenceKey
+
         const result = await this.asyncGetEvidenceByKey(evidenceKey)
         this.tokens[i].evidence = result
       }
@@ -184,10 +186,17 @@ export default {
       height: auto;
 
       .project-name {
-        padding: 30px 0;
+        padding-top: 30px;
         text-align: center;
         font-size: 2em;
         font-weight: bolder;
+      }
+
+      .project-description {
+        padding-bottom: 30px;
+        text-align: center;
+        font-size: 1.2em;
+        font-weight: bold;
       }
     }
 
