@@ -120,10 +120,10 @@ const evidenceAbi = [
 const evidenceContract = new web3.eth.Contract(evidenceAbi, evidenceFactoryAddress)
 
 const chainId = 1281
-const contractAddress = '0x493275370aF3f63d9ccd10a6539435121cF4fbb9'
+const erc721ContractAddress = '0x962c0940d72E7Db6c9a5F81f1cA87D8DB2B82A23'
 
 export {
   evidenceContract,
-  contractAddress,
+  erc721ContractAddress,
   chainId,
 }
