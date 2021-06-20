@@ -83,7 +83,7 @@ export default {
   },
   data() {
     return {
-      nftAddress: '0xf24FF3a9CF04c71Dbc94D0b566f7A27B94566cac',
+      nftAddress: '',
       tokens: [],
       eachPageSlide: 3,
       showSlides: false,
@@ -104,7 +104,15 @@ export default {
       return arr;
     },
   },
+  created() {
+    this.checkNFTAddrInURL()
+  },
   methods: {
+    checkNFTAddrInURL() {
+      if (this.$route.query.addr) {
+        this.nftAddress = this.$route.query.addr
+      }
+    },
     async fetchNFT() {
       console.clear()
 
