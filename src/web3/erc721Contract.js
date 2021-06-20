@@ -1,8 +1,5 @@
 import web3 from './index';
 
-// 创建账户 返回 地址，私钥
-// 用户地址
-const address = '0xf24FF3a9CF04c71Dbc94D0b566f7A27B94566cac';
 const erc721Abi = [
   {
     "inputs": [

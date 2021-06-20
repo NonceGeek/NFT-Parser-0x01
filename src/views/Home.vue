@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+    <github-link/>
     <a-layout>
       <a-layout-header>
         <a-row class="project-name">NFT-Parser-0x01</a-row>
@@ -83,10 +84,12 @@ import {
   chainId,
 } from '@/web3/evidenceContract';
 import TokenCard from '../components/TokenCard.vue';
+import GithubLink from '@/components/GithubLink';
 
 export default {
   name: 'Home',
   components: {
+    GithubLink,
     TokenCard,
   },
   data() {
