@@ -134,6 +134,11 @@ export default {
       try {
         const tokenLength = await this.asyncBalanceOf(this.nftAddress)
 
+        if (tokenLength === 0) {
+          this.infoOnZeroTokens()
+          return
+        }
+
         for (let i = 0; i < tokenLength; i++) {
           let tokenId = await this.asyncTokenOfOwnerByIndex(this.nftAddress, i)
           this.tokens.push({
@@ -191,6 +196,12 @@ export default {
           resolve(result);
         });
       });
+    },
+    infoOnZeroTokens() {
+      this.$notification.info({
+        message: '注意！',
+        description: '该地址下没有 NFT 资源',
+      })
     },
     errorOnInvalidNFTAddress() {
       this.$notification.error({
