@@ -131,27 +131,34 @@ export default {
 
       this.showSlides = false
       this.tokens = []
-      const tokenLength = await this.asyncBalanceOf(this.nftAddress)
+      try {
+        const tokenLength = await this.asyncBalanceOf(this.nftAddress)
 
-      for (let i = 0; i < tokenLength; i++) {
-        let tokenId = await this.asyncTokenOfOwnerByIndex(this.nftAddress, i)
-        this.tokens.push({
-          tokenId: parseInt(tokenId),
-        })
+        for (let i = 0; i < tokenLength; i++) {
+          let tokenId = await this.asyncTokenOfOwnerByIndex(this.nftAddress, i)
+          this.tokens.push({
+            tokenId: parseInt(tokenId),
+          })
+        }
+
+        for (let i = 0; i < this.tokens.length; i++) {
+          const tokenUri = await this.asyncTokenURI(this.tokens[i].tokenId)
+          this.tokens[i].tokenUri = tokenUri
+
+          const evidenceKey = `${chainId}:${erc721ContractAddress}:${this.tokens[i].tokenId}`
+          this.tokens[i].evidenceKey = evidenceKey
+
+          const result = await this.asyncGetEvidenceByKey(evidenceKey)
+          this.tokens[i].evidence = result
+        }
+
+        this.showSlides = true
+
+      } catch (error) {
+        if (error.message.indexOf('invalid address') > -1) {
+          this.errorOnInvalidNFTAddress()
+        }
       }
-
-      for (let i = 0; i < this.tokens.length; i++) {
-        const tokenUri = await this.asyncTokenURI(this.tokens[i].tokenId)
-        this.tokens[i].tokenUri = tokenUri
-
-        const evidenceKey = `${chainId}:${erc721ContractAddress}:${this.tokens[i].tokenId}`
-        this.tokens[i].evidenceKey = evidenceKey
-
-        const result = await this.asyncGetEvidenceByKey(evidenceKey)
-        this.tokens[i].evidence = result
-      }
-
-      this.showSlides = true
     },
     asyncBalanceOf(nftAddress) {
       return new Promise((resolve, reject) => {
@@ -185,6 +192,12 @@ export default {
         });
       });
     },
+    errorOnInvalidNFTAddress() {
+      this.$notification.error({
+        message: '注意！',
+        description: 'NFT 地址无效，请检查后重新查询',
+      })
+    }
   },
 };
 </script>
