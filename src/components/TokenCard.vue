@@ -71,7 +71,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
 .ant-card {
-  width: 60%;
+  width: 90%;
 }
 
 .ant-card-head-title {

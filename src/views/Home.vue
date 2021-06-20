@@ -49,7 +49,7 @@
                   <a-col
                     v-for="(tokens, index) in pagedTokens[pageIndex - 1]"
                     :key="((pageIndex - 1) * eachPageSlide) + index"
-                    :span="12"
+                    :span="24 / eachPageSlide"
                     class="token-card"
                   >
                     <token-card
@@ -85,7 +85,7 @@ export default {
     return {
       nftAddress: '0xf24FF3a9CF04c71Dbc94D0b566f7A27B94566cac',
       tokens: [],
-      eachPageSlide: 2,
+      eachPageSlide: 3,
       showSlides: false,
     };
   },
