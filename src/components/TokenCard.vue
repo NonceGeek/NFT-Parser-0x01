@@ -59,8 +59,8 @@ export default {
         name: intro.name,
         description: intro.description,
         url: intro.url,
-        effective_date: dayjs(intro.effective_date).format('YYYY-MM-DD HH:mm:ss'),
-        expiration_date: dayjs(intro.expiration_date).format('YYYY-MM-DD HH:mm:ss'),
+        effective_date: dayjs(intro.effective_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
+        expiration_date: dayjs(intro.expiration_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
         gene: intro.gene,
       }
     },
