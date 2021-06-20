@@ -10,11 +10,19 @@
         <a-row type="flex" justify="space-between" align="middle">
           <a-col :span="16" :offset="4">
             <a-input-search
-              :default-value="nftAddress"
-              enter-button="获取 NFT!"
+              v-model="nftAddress"
               size="large"
+              allow-clear
               @search="fetchNFT"
-            />
+            >
+              <a-button
+                slot="enterButton"
+                type="primary"
+                :disabled="!searchEnabled"
+              >
+                获取 NFT!
+              </a-button>
+            </a-input-search>
           </a-col>
         </a-row>
         <!-- 横向显示 NFT 列表 -->
@@ -103,6 +111,9 @@ export default {
       }
       return arr;
     },
+    searchEnabled() {
+      return this.nftAddress.length > 0
+    },
   },
   created() {
     this.checkNFTAddrInURL()
@@ -114,6 +125,10 @@ export default {
       }
     },
     async fetchNFT() {
+      if (!this.searchEnabled) {
+        return
+      }
+
       this.showSlides = false
       this.tokens = []
       const tokenLength = await this.asyncBalanceOf(this.nftAddress)
