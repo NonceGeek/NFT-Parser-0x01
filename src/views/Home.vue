@@ -94,7 +94,7 @@ export default {
   },
   data() {
     return {
-      nftAddress: '',
+      nftAddress: '0xB84DF36e58a31f98d6294420569c365e8e1acaCd',
       tokens: [],
       eachPageSlide: 3,
       showSlides: false,
