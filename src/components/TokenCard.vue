@@ -1,7 +1,6 @@
 <template>
   <div class="token-card">
     <a-card
-      v-if="extra"
       :title="evidenceKey"
     >
       <div class="nft-img">
@@ -17,7 +16,8 @@
       </div>
       <div class="nft-extra">
         <span>资源链接：</span>
-        <a :href="extra.url">{{ extra.url }}</a>
+        <a v-if="extra.url !== '暂无'" :href="extra.url">{{ extra.url }}</a>
+        <span v-else>暂无</span>
       </div>
       <div class="nft-extra">
         <span>生效时间：</span>
@@ -43,7 +43,14 @@ export default {
     return {
       evidenceKey: null,
       tokenUri: null,
-      extra: null,
+      extra: {
+        name: null,
+        description: null,
+        url: null,
+        effective_date: null,
+        expiration_date: null,
+        gene: null,
+      },
     };
   },
   mounted() {
@@ -53,22 +60,35 @@ export default {
     normalize() {
       this.evidenceKey = this.token.evidenceKey
       this.tokenUri = this.token.tokenUri
+
+      if (!this.token.evidence[0]) {
+        this.extra = {
+          name: '暂无',
+          description: '暂无',
+          url: '暂无',
+          effective_date: '暂无',
+          expiration_date: '暂无',
+          gene: '暂无',
+        }
+
+        return
+      }
+
       const intro = JSON.parse(this.token.evidence[0].replaceAll("'", '\"'))
 
       this.extra = {
-        name: intro.name,
-        description: intro.description,
-        url: intro.url,
-        effective_date: dayjs(intro.effective_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
-        expiration_date: dayjs(intro.expiration_date * 1000).format('YYYY-MM-DD HH:mm:ss'),
-        gene: intro.gene,
+        name: intro.name || '暂无',
+        description: intro.description || '暂无',
+        url: intro.url || '暂无',
+        effective_date: dayjs(intro.effective_date * 1000).format('YYYY-MM-DD HH:mm:ss') || '暂无',
+        expiration_date: dayjs(intro.expiration_date * 1000).format('YYYY-MM-DD HH:mm:ss') || '暂无',
+        gene: intro.gene || '暂无',
       }
     },
   },
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
 .ant-card {
   width: 90%;
