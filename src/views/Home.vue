@@ -137,7 +137,7 @@ export default {
       try {
         const tokenLength = await this.asyncBalanceOf(this.nftAddress)
 
-        if (tokenLength === 0) {
+        if (+tokenLength === 0) {
           this.infoOnZeroTokens()
           return
         }
