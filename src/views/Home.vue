@@ -77,11 +77,13 @@
 </template>
 
 <script>
-import erc721Contract from '@/web3/erc721Contract';
+import {
+  erc721Contract,
+  erc721Address,
+  chainId,
+} from '@/web3/erc721Contract';
 import {
   evidenceContract,
-  erc721ContractAddress,
-  chainId,
 } from '@/web3/evidenceContract';
 import TokenCard from '../components/TokenCard.vue';
 import GithubLink from '@/components/GithubLink';
@@ -134,6 +136,7 @@ export default {
 
       this.showSlides = false
       this.tokens = []
+
       try {
         const tokenLength = await this.asyncBalanceOf(this.nftAddress)
 
@@ -153,7 +156,7 @@ export default {
           const tokenUri = await this.asyncTokenURI(this.tokens[i].tokenId)
           this.tokens[i].tokenUri = tokenUri
 
-          const evidenceKey = `${chainId}:${erc721ContractAddress}:${this.tokens[i].tokenId}`
+          const evidenceKey = `${chainId}:${erc721Address}:${this.tokens[i].tokenId}`
           this.tokens[i].evidenceKey = evidenceKey
 
           const result = await this.asyncGetEvidenceByKey(evidenceKey)
@@ -165,6 +168,8 @@ export default {
       } catch (error) {
         if (error.message.indexOf('invalid address') > -1) {
           this.errorOnInvalidNFTAddress()
+        } else {
+          console.log(error)
         }
       }
     },
