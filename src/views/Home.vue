@@ -123,10 +123,27 @@ export default {
   created() {
     this.checkNFTAddrInURL()
   },
+  watch:{
+    $route(to, from) {
+      // 路由变化，但变化前后都没有带上 NFT 地址，无需任何操作
+      if (!from.query.addr && !to.query.addr) {
+        return
+      }
+
+      if ((from.query.addr && !to.query.addr) ||
+        (!from.query.addr && to.query.addr) ||
+        (from.query.addr !== to.query.addr)) {
+        this.tokens = []
+        this.checkNFTAddrInURL()
+      }
+    },
+  },
   methods: {
     checkNFTAddrInURL() {
       if (this.$route.query.addr) {
         this.nftAddress = this.$route.query.addr
+      } else {
+        this.nftAddress = '0xB84DF36e58a31f98d6294420569c365e8e1acaCd'
       }
     },
     async fetchNFT() {
