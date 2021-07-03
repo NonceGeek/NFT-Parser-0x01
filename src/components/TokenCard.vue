@@ -7,15 +7,15 @@
         <img :src="tokenUri">
       </div>
       <div class="nft-extra">
-        <span>资源名称：</span>
+        <span>名称：</span>
         <span>{{ extra.name }}</span>
       </div>
       <div class="nft-extra">
-        <span>资源描述：</span>
+        <span>描述：</span>
         <span>{{ extra.description }}</span>
       </div>
       <div class="nft-extra">
-        <span>资源链接：</span>
+        <span>链接：</span>
         <a v-if="extra.url !== '暂无'" :href="extra.url">{{ extra.url }}</a>
         <span v-else>暂无</span>
       </div>
