@@ -122,6 +122,7 @@ export default {
   },
   created() {
     this.checkNFTAddrInURL()
+    this.fetchNFT()
   },
   watch:{
     $route(to, from) {
@@ -135,6 +136,7 @@ export default {
         (from.query.addr !== to.query.addr)) {
         this.tokens = []
         this.checkNFTAddrInURL()
+        this.fetchNFT()
       }
     },
   },
