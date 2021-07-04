@@ -79,7 +79,7 @@
 <script>
 import {
   erc721Contract,
-  erc721Address,
+  erc721Address as defaultErc721Address,
   chainId,
 } from '@/web3/erc721Contract';
 import {
@@ -97,6 +97,7 @@ export default {
   data() {
     return {
       nftAddress: '0xB84DF36e58a31f98d6294420569c365e8e1acaCd',
+      erc721_addr: null,
       tokens: [],
       eachPageSlide: 3,
       showSlides: false,
@@ -127,17 +128,14 @@ export default {
   watch:{
     $route(to, from) {
       // 路由变化，但变化前后都没有带上 NFT 地址，无需任何操作
-      if (!from.query.addr && !to.query.addr) {
+      if (!from.query.addr && !from.query.erc721_addr
+        && !to.query.addr && !to.query.erc721_addr) {
         return
       }
 
-      if ((from.query.addr && !to.query.addr) ||
-        (!from.query.addr && to.query.addr) ||
-        (from.query.addr !== to.query.addr)) {
-        this.tokens = []
-        this.checkNFTAddrInURL()
-        this.fetchNFT()
-      }
+      this.tokens = []
+      this.checkNFTAddrInURL()
+      this.fetchNFT()
     },
   },
   methods: {
@@ -146,6 +144,12 @@ export default {
         this.nftAddress = this.$route.query.addr
       } else {
         this.nftAddress = '0xB84DF36e58a31f98d6294420569c365e8e1acaCd'
+      }
+
+      if (this.$route.query.erc721_addr) {
+        this.erc721_addr = this.$route.query.erc721_addr
+      } else {
+        this.erc721_addr = defaultErc721Address
       }
     },
     async fetchNFT() {
@@ -175,7 +179,7 @@ export default {
           const tokenUri = await this.asyncTokenURI(this.tokens[i].tokenId)
           this.tokens[i].tokenUri = tokenUri
 
-          const evidenceKey = `${chainId}:${erc721Address}:${this.tokens[i].tokenId}`
+          const evidenceKey = `${chainId}:${this.erc721_addr}:${this.tokens[i].tokenId}`
           this.tokens[i].evidenceKey = evidenceKey
 
           const result = await this.asyncGetEvidenceByKey(evidenceKey)
