@@ -11,7 +11,7 @@
         <a-row type="flex" justify="space-between" align="middle">
           <a-col :span="16" :offset="4">
             <a-input-search
-              v-model="nftAddress"
+              v-model="addr"
               size="large"
               allow-clear
               @search="fetchNFT"
@@ -77,14 +77,19 @@
 </template>
 
 <script>
+import web3 from "@/web3/index"
+
 import {
-  erc721Contract,
-  erc721Address as defaultErc721Address,
+  erc721Abi,
+  erc721Address,
   chainId,
+  nftAddress,
 } from '@/web3/erc721Contract';
 import {
-  evidenceContract,
+  evidenceAbi,
+  evidenceFactoryAddress,
 } from '@/web3/evidenceContract';
+
 import TokenCard from '../components/TokenCard.vue';
 import GithubLink from '@/components/GithubLink';
 
@@ -96,8 +101,18 @@ export default {
   },
   data() {
     return {
-      nftAddress: '0xB84DF36e58a31f98d6294420569c365e8e1acaCd',
+      defaultParams: {
+        erc721_addr: erc721Address,
+        addr: nftAddress,
+        chain_id: chainId,
+        evidence_addr: evidenceFactoryAddress,
+      },
       erc721_addr: null,
+      addr: null,
+      chain_id: null,
+      evidence_addr: null,
+      erc721Contract: null,
+      evidenceContract: null,
       tokens: [],
       eachPageSlide: 3,
       showSlides: false,
@@ -118,11 +133,12 @@ export default {
       return arr;
     },
     searchEnabled() {
-      return this.nftAddress.length > 0
+      return this.addr.length > 0
     },
   },
   created() {
-    this.checkNFTAddrInURL()
+    this.checkQueryInUrl()
+    this.initContracts()
     this.fetchNFT()
   },
   watch:{
@@ -134,23 +150,28 @@ export default {
       }
 
       this.tokens = []
-      this.checkNFTAddrInURL()
+      this.checkQueryInUrl()
       this.fetchNFT()
     },
   },
   methods: {
-    checkNFTAddrInURL() {
-      if (this.$route.query.addr) {
-        this.nftAddress = this.$route.query.addr
-      } else {
-        this.nftAddress = '0xB84DF36e58a31f98d6294420569c365e8e1acaCd'
+    checkQueryInUrl() {
+      const paramList = Object.keys(this.defaultParams)
+
+      for (let i = 0; i < paramList.length; i++) {
+        if (this.$route.query[paramList[i]]) {
+          this[paramList[[i]]] = this.$route.query[paramList[i]]
+        } else {
+          this[paramList[i]] = this.defaultParams[paramList[i]]
+        }
       }
 
-      if (this.$route.query.erc721_addr) {
-        this.erc721_addr = this.$route.query.erc721_addr
-      } else {
-        this.erc721_addr = defaultErc721Address
-      }
+      // 保证 chain_id 为数字
+      this.chain_id = +this.chain_id
+    },
+    initContracts() {
+      this.erc721Contract = new web3.eth.Contract(erc721Abi, this.erc721_addr)
+      this.evidenceContract = new web3.eth.Contract(evidenceAbi, this.evidence_addr)
     },
     async fetchNFT() {
       if (!this.searchEnabled) {
@@ -161,7 +182,7 @@ export default {
       this.tokens = []
 
       try {
-        const tokenLength = await this.asyncBalanceOf(this.nftAddress)
+        const tokenLength = await this.asyncBalanceOf(this.addr)
 
         if (+tokenLength === 0) {
           this.infoOnZeroTokens()
@@ -169,7 +190,7 @@ export default {
         }
 
         for (let i = 0; i < tokenLength; i++) {
-          let tokenId = await this.asyncTokenOfOwnerByIndex(this.nftAddress, i)
+          let tokenId = await this.asyncTokenOfOwnerByIndex(this.addr, i)
           this.tokens.push({
             tokenId: parseInt(tokenId),
           })
@@ -196,17 +217,17 @@ export default {
         }
       }
     },
-    asyncBalanceOf(nftAddress) {
+    asyncBalanceOf(addr) {
       return new Promise((resolve, reject) => {
-        erc721Contract.methods.balanceOf(nftAddress).call((err, result) => {
+        this.erc721Contract.methods.balanceOf(addr).call((err, result) => {
           if (err) reject(err);
           resolve(result);
         });
       });
     },
-    asyncTokenOfOwnerByIndex(nftAddress, tokenIndex) {
+    asyncTokenOfOwnerByIndex(addr, tokenIndex) {
       return new Promise((resolve, reject) => {
-        erc721Contract.methods.tokenOfOwnerByIndex(nftAddress, tokenIndex).call((err, result) => {
+        this.erc721Contract.methods.tokenOfOwnerByIndex(addr, tokenIndex).call((err, result) => {
           if (err) reject(err);
           resolve(result);
         });
@@ -214,7 +235,7 @@ export default {
     },
     asyncTokenURI(tokenId) {
       return new Promise((resolve, reject) => {
-        erc721Contract.methods.tokenURI(tokenId).call((err, result) => {
+        this.erc721Contract.methods.tokenURI(tokenId).call((err, result) => {
           if (err) reject(err);
           resolve(result);
         });
@@ -222,7 +243,7 @@ export default {
     },
     asyncGetEvidenceByKey(evidenceKey) {
       return new Promise((resolve, reject) => {
-        evidenceContract.methods.getEvidenceByKey(evidenceKey).call((err, result) => {
+        this.evidenceContract.methods.getEvidenceByKey(evidenceKey).call((err, result) => {
           if (err) reject(err);
           resolve(result);
         });

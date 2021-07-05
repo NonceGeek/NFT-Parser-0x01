@@ -1,6 +1,3 @@
-import web3 from "./index"
-
-const evidenceFactoryAddress = '0xB942FA2273C7Bce69833e891BDdFd7212d2dA415'
 const evidenceAbi = [
   {
     "constant": true,
@@ -224,10 +221,9 @@ const evidenceAbi = [
     "type": "event"
   }
 ]
-
-const evidenceContract = new web3.eth.Contract(evidenceAbi, evidenceFactoryAddress)
-
+const evidenceFactoryAddress = '0xB942FA2273C7Bce69833e891BDdFd7212d2dA415'
 
 export {
-  evidenceContract,
+  evidenceAbi,
+  evidenceFactoryAddress,
 }
